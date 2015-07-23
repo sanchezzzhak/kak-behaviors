@@ -22,7 +22,8 @@ use yii\validators\UniqueValidator;
  *             'attribute' => 'title',
  *             // 'slugAttribute' => 'slug',
  *             // 'replacements' => [ '_' => '-']
- *             // 'limit' => ''
+ *             // 'limit' => '100'                  // truncate text
+ *             // 'delimiter' => '-'                // default
  *         ],
  *     ];
  * }

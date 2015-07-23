@@ -16,7 +16,7 @@ class MaterializedPathBehavior extends Behavior
 
     public $pathAttribute = 'path';
     public $parentAttribute = 'parent_id';
-    public $positionAttribute = '';
+    public $positionAttribute = null;
 
     public $delimiter = '.';
 
@@ -50,7 +50,7 @@ class MaterializedPathBehavior extends Behavior
             $posTo = (int) $position;
             $lower = $posTo < $posFrom;
             $owner->find()
-                ->andWhere(['like', 'path', $path])
+                ->andWhere(['like', $this->pathAttribute , $path])
                 ->andWhere(['between', $this->positionAttribute, min($posFrom, $posTo), max($posFrom, $posTo)])
                 ->createCommand()->update($owner->tableName(), [
                     $this->positionAttribute => new \yii\db\Expression($this->positionAttribute . ($lower ? '+' : '-') . 1)
@@ -59,8 +59,7 @@ class MaterializedPathBehavior extends Behavior
             $owner->update($runValidation, $attributes);
         } else {
             $owner->find()
-                ->andWhere(['like', 'path', $path])
-                ->andWhere(['level' => $owner->{$this->levelAttribute}])
+                ->andWhere(['like', $this->pathAttribute , $path])
                 ->andWhere(['>', $this->positionAttribute, $posFrom])
                 ->createCommand()->update($owner->tableName(), [
                     $this->positionAttribute => new \yii\db\Expression($this->positionAttribute.' - 1')
@@ -101,8 +100,8 @@ class MaterializedPathBehavior extends Behavior
         } else {
             return $owner;
         }
-
-       // $query->orderBy(['position' => SORT_ASC]);
+        if(!empty($this->positionAttribute))
+             $query->orderBy([$this->positionAttribute => SORT_ASC]);
 
         $items = $query->all();
         $levels = [];
