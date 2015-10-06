@@ -23,7 +23,7 @@ Usage ManyToManyBehavior
 
 ```
 
-Usage MaterializedPathBehavior
+#MaterializedPathBehavior
 -----
 insert the following code to your ActiveRecord class:
 ```php
@@ -72,7 +72,7 @@ Set materialized path
 ```
 
 
-Usage SluggableBehavior
+#SluggableBehavior
 -----
 insert the following code to your ActiveRecord class:
 ```php
@@ -89,3 +89,6 @@ insert the following code to your ActiveRecord class:
          ];
      }
 ```
+
+#IdentityMapBehavior
+-----
