@@ -79,7 +79,7 @@ class CallbackBehavior extends Behavior
         if ($type == self::METHOD_JSON) {
             return \yii\helpers\Json::decode($value);
         }
-        if ($type == self::METHOD_STRING) {
+        if ($type == self::METHOD_STRING && !empty($value)) {
             $delimiter = ArrayHelper::getValue($params, 'delimiter', ',');
             return explode($delimiter, $value);
         }
@@ -91,7 +91,7 @@ class CallbackBehavior extends Behavior
         if ($type == self::METHOD_JSON) {
             return \yii\helpers\Json::encode($value);
         }
-        if ($type == self::METHOD_STRING) {
+        if ($type == self::METHOD_STRING && !empty($value)) {
             $delimiter = ArrayHelper::getValue($params, 'delimiter', ',');
             return implode($delimiter, $value);
         }
