@@ -90,5 +90,43 @@ insert the following code to your ActiveRecord class:
      }
 ```
 
+#CallbackBehavior
+-----
+insert the following code to your ActiveRecord class:
+
+
+```php
+     public function behaviors(){
+         return [
+                    'class' => 'kak\models\behaviors\CallbackBehavior',
+                    'params' => [
+                        'operators' => [
+                            'attribute' => 'operator_list',
+
+                            // implode/explode method
+                            'method' => \kak\models\behaviors\CallbackBehavior::METHOD_STRING,
+                            'delimiter' => '|' // set other  delimiter only METHOD_STRING
+
+                             // or json_encode/json_decode method
+                            'method' => \kak\models\behaviors\CallbackBehavior::METHOD_JSON,
+
+                            // or custom callback
+                            'set' => function($value) {
+                                return implode(',',$value);
+                            },
+                            'get' => function($value) {
+                                return explode(',',$value);
+                            },
+                        ],
+                    ],
+
+
+                ]
+         ];
+     }
+```
+
+
+
 #IdentityMapBehavior
 -----
