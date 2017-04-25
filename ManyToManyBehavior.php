@@ -1,6 +1,7 @@
 <?php
 namespace kak\models\behaviors;
 
+use yii\db\ActiveQuery;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\base\ErrorException;
@@ -76,6 +77,46 @@ class ManyToManyBehavior extends \yii\base\Behavior
             }
         }
     }
+
+
+    private function removeAllRelation($attributeName)
+    {
+        /**
+         * @var $primaryModel \yii\db\ActiveRecord
+         * @var $connection \yii\db\Connection
+         */
+        $primaryModel = $this->owner;
+        $primaryModelPk = $primaryModel->getPrimaryKey();
+
+        $relationName = $this->getRelationName($attributeName);
+        $relation = $primaryModel->getRelation($relationName);
+
+        $connection = $primaryModel::getDB();
+        try {
+            if (!empty($relation->via) && $relation->multiple) {
+                list($junctionTable) = array_values($relation->via->from);
+                list($junctionColumn) = array_keys($relation->via->link);
+
+                $connection->createCommand()
+                    ->delete($junctionTable, "{$junctionColumn} = :id", [':id' => $primaryModelPk])
+                    ->execute();
+
+            } elseif (!empty($relation->link) && $relation->multiple) {
+                $foreignModel = new $relation->modelClass();
+                $junctionTable = $foreignModel->tableName();
+                list($junctionColumn) = array_keys($relation->link);
+
+                $connection->createCommand()
+                    ->delete($junctionTable, "{$junctionColumn} = :id", [':id' => $primaryModelPk])
+                    ->execute();
+            }
+        } catch (\yii\db\Exception $ex) {
+            throw $ex;
+        }
+
+    }
+
+
     /**
      * Save all dirty (changed) relation values ($this->_values) to the database
      * @param $event
@@ -101,11 +142,11 @@ class ManyToManyBehavior extends \yii\base\Behavior
             $relation = $primaryModel->getRelation($relationName);
 
             if (!$this->hasNewValue($attributeName)) {
+                $this->removeAllRelation($attributeName);
                 continue;
             }
 
             $newValue = $this->getNewValue($attributeName);
-
             $bindingKeys = $newValue;
             $isNested = count($bindingKeys, COUNT_RECURSIVE) > count($bindingKeys);
 
