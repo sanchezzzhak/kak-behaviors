@@ -142,7 +142,6 @@ class ManyToManyBehavior extends \yii\base\Behavior
             $relation = $primaryModel->getRelation($relationName);
 
             if (!$this->hasNewValue($attributeName)) {
-                $this->removeAllRelation($attributeName);
                 continue;
             }
 
