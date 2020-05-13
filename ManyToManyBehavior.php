@@ -147,7 +147,8 @@ class ManyToManyBehavior extends \yii\base\Behavior
 
             $newValue = $this->getNewValue($attributeName);
             $bindingKeys = $newValue;
-            $isNested = count($bindingKeys, COUNT_RECURSIVE) > count($bindingKeys);
+            $isCountable = (is_array($bindingKeys) || $bindingKeys instanceof Countable);
+            $isNested = $isCountable && count($bindingKeys, COUNT_RECURSIVE) > count($bindingKeys);
 
             // many-to-many
             if (!empty($relation->via) && $relation->multiple) {
