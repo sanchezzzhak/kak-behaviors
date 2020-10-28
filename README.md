@@ -27,11 +27,16 @@ Usage ManyToManyBehavior
 -----
 insert the following code to your ActiveRecord class:
 ```php
+    use kak\models\behaviors\MaterializedPathBehavior
+
+    // ...
+
     // step 1
-     public function behaviors(){
+     public function behaviors()
+     {
          return [
             [
-                'class' => 'kak\models\behaviors\MaterializedPathBehavior'
+                'class' => MaterializedPathBehavior::class
             ],
          ];
      }
@@ -45,7 +50,7 @@ insert the following code to your ActiveRecord class:
          return new MaterializedPathQuery(get_called_class());
      }
 ```
-Create class MaterializedPathQuery ActiveQuery
+Create class MaterializedPathQuery inherited from ActiveQuery
 ```php
 /**
 Class MaterializedPathQuery
@@ -76,10 +81,13 @@ Set materialized path
 -----
 insert the following code to your ActiveRecord class:
 ```php
-     public function behaviors(){
+use kak\models\behaviors\SluggableBehavior;
+
+     public function behaviors()
+     {
          return [
             [
-                 'class' => 'kak\models\behaviors\SluggableBehavior',
+                 'class' => SluggableBehavior::class,
                  'attribute' => 'title',  
                  'slugAttribute' => 'slug',           
                  // 'replacements' => [ '_' => '-']   
@@ -96,37 +104,61 @@ insert the following code to your ActiveRecord class:
 
 
 ```php
-     public function behaviors(){
-         return [
-                    'class' => 'kak\models\behaviors\CallbackBehavior',
-                    'params' => [
-                        'operators' => [
-                            'attribute' => 'operator_list',
+use kak\models\behaviors\CallbackBehavior;
 
-                            // implode/explode method
-                            'method' => \kak\models\behaviors\CallbackBehavior::METHOD_STRING,
-                            'delimiter' => '|' // set other  delimiter only METHOD_STRING
+// ...
 
-                             // or json_encode/json_decode method
-                            'method' => \kak\models\behaviors\CallbackBehavior::METHOD_JSON,
-
-                            // or custom callback
-                            'set' => function($value) {
-                                return implode(',',$value);
-                            },
-                            'get' => function($value) {
-                                return explode(',',$value);
-                            },
-                        ],
-                    ],
-
-
-                ]
-         ];
-     }
+    public function behaviors()
+    {
+        return [
+            'class' => CallbackBehavior::class,
+            'params' => [
+                'operators' => [
+                    'attribute' => 'operator_list',
+                    // implode/explode method
+                    'method' => CallbackBehavior::METHOD_STRING,
+                    'delimiter' => '|', // set other  delimiter only METHOD_STRING
+                    // or json_encode/json_decode method
+                    'method' => CallbackBehavior::METHOD_JSON,
+                    // or custom callback
+                    'set' => function ($value) {
+                        return implode(',', $value);
+                    },
+                    'get' => function ($value) {
+                        return explode(',', $value);
+                    },
+                ],
+            ],
+        ];
+    }
 ```
 
 
 
-#IdentityMapBehavior
+#UUIDBehavior
 -----
+
+* is use postgress set actived module `uuid-ossp` 
+* `create extension if not exists "uuid-ossp"`
+
+
+insert the following code to your ActiveRecord class:
+
+```php
+use kak\models\behaviors\UUIDBehavior;
+
+// ...
+
+ public function behaviors()
+ {
+     return [
+         [
+             'class' => UUIDBehavior::class,
+             'createViaDb' => true   // is use postgress
+         ],
+      ;
+  }
+
+
+```
+
